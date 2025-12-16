@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Formativo ENAE</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Excel Library -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        /* --- Design System --- */
+        :root {
+            /* Palette */
+            --primary: #0f172a;
+            /* Slate 900 */
+            --primary-light: #1e293b;
+            /* Slate 800 */
+            --accent: #f97316;
+            /* Orange 500 */
+            --accent-hover: #ea580c;
+            /* Orange 600 */
+
+            --bg-body: #f8fafc;
+            /* Slate 50 */
+            --bg-surface: #ffffff;
+
+            --text-main: #334155;
+            /* Slate 700 */
+            --text-dark: #0f172a;
+            /* Slate 900 */
+            --text-light: #64748b;
+            /* Slate 500 */
+
+            --border: #e2e8f0;
+            /* Slate 200 */
+
+            /* Status */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        /* --- Reset & Base --- */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .brand-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        /* Admin Toggle */
+        .admin-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-body);
+            padding: 6px 16px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+        }
+
+        .admin-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked+.slider {
+            background-color: var(--accent);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(18px);
+        }
+
+        /* --- Controls Section --- */
+        .controls-section {
+            padding: 2rem 0;
+        }
+
+        .controls-card {
+            background: var(--bg-surface);
+            padding: 1.25rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Inputs */
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 14px;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .form-control {
+            padding: 10px 14px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            background: var(--bg-body);
+            transition: all 0.2s;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        select.form-control {
+            padding-left: 14px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .search-box {
+            flex: 2;
+            min-width: 280px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-light);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-dark);
+            background: var(--bg-body);
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        /* --- Grid & Cards --- */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(249, 115, 22, 0.2);
+        }
+
+        .card-image-wrapper {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .card:hover .card-image {
+            transform: scale(1.08);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 3.2em;
+            /* Fixed height for alignment */
+        }
+
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .meta-item i {
+            width: 16px;
+            text-align: center;
+            color: var(--accent);
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .price-tag {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .btn-link {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.2s;
+        }
+
+        .btn-link:hover {
+            gap: 8px;
+            color: var(--accent-hover);
+        }
+
+        /* Admin Actions on Card */
+        .card-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .card:hover .card-actions,
+        .card-actions:focus-within {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .edit-btn {
+            background: var(--warning);
+        }
+
+        .delete-btn {
+            background: var(--danger);
+        }
+
+        /* Expired State */
+        .expired-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(2px);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .expired-badge {
+            border: 2px solid var(--text-dark);
+            color: var(--text-dark);
+            padding: 8px 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            transform: rotate(-5deg);
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+        }
+
+        .modal {
+            background: white;
+            width: 90%;
+            max-width: 550px;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            border-radius: 8px;
+        }
+
+        .checkbox-wrapper label {
+            color: var(--accent-hover);
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .checkbox-wrapper input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-light);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- Active Filters --- */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e2e8f0;
+            color: var(--text-dark);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .filter-tag i {
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+
+        .filter-tag i:hover {
+            color: var(--danger);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(2px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Cart Drawer --- */
+        .cart-trigger {
+            position: relative;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.2s;
+            margin-left: 1.5rem;
+        }
+
+        .cart-trigger:hover {
+            background: var(--bg-body);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cart-badge.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .cart-drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .cart-drawer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+            z-index: 2001;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-drawer.active {
+            transform: translateX(0);
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .cart-close:hover {
+            color: var(--danger);
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: var(--bg-body);
+            transition: all 0.2s;
+        }
+
+        .cart-item:hover {
+            border-color: var(--accent);
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cart-item-content {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .cart-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            gap: 10px;
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px;
+            align-self: flex-start;
+            transition: color 0.2s;
+        }
+
+        .cart-item-remove:hover {
+            color: var(--danger);
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-body);
+        }
+
+        .cart-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .cart-summary-row.total {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-light);
+        }
+
+        .cart-empty i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.info {
+            border-left-color: var(--info);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .toast-message {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .btn-add-cart {
+            width: 100%;
+            justify-content: center;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-add-cart.default {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-add-cart.default:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-add-cart.selected {
+            background: #ecfdf5;
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-add-cart.selected:hover {
+            background: #d1fae5;
+            content: "Quitar";
+        }
+
+        .credit-counter-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--primary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 99px;
+            border: 1px solid var(--primary);
+            margin-right: 1rem;
+        }
+
+        .credit-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .credit-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-content">
+            <div class="brand">
+                <div class="brand-logo">E</div>
+                <div class="brand-text">Catálogo Formativo</div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="credit-counter-wrapper">
+                    <span class="credit-label">Créditos:</span>
+                    <span class="credit-value" id="globalCredits">600</span>
+                </div>
+
+                <div class="admin-toggle-wrapper" title="Modo Administrador">
+                    <i class="fas fa-user-shield" style="color: var(--text-light);"></i>
+                    <label class="switch" style="transform: scale(0.8);">
+                        <input type="checkbox" id="adminToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="cart-trigger" onclick="toggleCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <div class="cart-badge" id="cartBadge">0</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Controls -->
+        <section class="controls-section">
+            <div class="controls-card">
+                <!-- Admin Buttons -->
+                <button class="btn btn-primary" id="btnAddCourse" style="display: none;">
+                    <i class="fas fa-plus"></i> Nuevo Curso
+                </button>
+                <button class="btn btn-secondary" id="btnImport" style="display: none;">
+                    <i class="fas fa-file-import"></i> Importar Excel
+                </button>
+                <button class="btn btn-secondary" id="btnDeleteAll"
+                    style="display: none; background-color: var(--danger); color: white;">
+                    <i class="fas fa-trash-alt"></i> Borrar Todo
+                </button>
+                <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" style="display: none;">
+
+                <!-- Search -->
+                <div class="search-box input-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar curso, categoría...">
+                </div>
+
+                <!-- Filters -->
+                <div class="filters">
+                    <div class="input-group" style="flex:1">
+                        <select id="categoryFilter" class="form-control">
+                            <option value="all">Todas las Categorías</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="flex:1">
+                        <select id="modalityFilter" class="form-control">
+                            <option value="all">Todas las Modalidades</option>
+                            <option value="Virtual Live">Virtual Live</option>
+                            <option value="Semipresencial">Semipresencial</option>
+                            <option value="Online">Online</option>
+                            <option value="Presencial">Presencial</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="flex:1">
+                        <select id="sortOrder" class="form-control">
+                            <option value="date_asc">Fecha: Próximos</option>
+                            <option value="date_desc">Fecha: Lejanos</option>
+                            <option value="price_asc">Precio: Menor a Mayor</option>
+                            <option value="price_desc">Precio: Mayor a Menor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Active Filters -->
+                <div id="activeFilters" class="active-filters"></div>
+            </div>
+        </section>
+
+        <!-- Grid -->
+        <div id="courseContainer" class="course-grid">
+            <!-- JS Rendered Content -->
+        </div>
+        <!-- Toast Container -->
+        <div id="toast-container"></div>
+
+        <!-- Cart Drawer -->
+        <div class="cart-drawer-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+        <div class="cart-drawer" id="cartDrawer">
+            <div class="cart-header">
+                <div class="cart-title">
+                    <i class="fas fa-shopping-cart"></i> Tu Selección
+                </div>
+                <button class="cart-close" onclick="toggleCart()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-body" id="cartBody">
+                <!-- Items -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-summary-row">
+                    <span>Cursos Seleccionados:</span>
+                    <span id="cartCount">0</span>
+                </div>
+                <div class="cart-summary-row">
+                    <span>Créditos Usados:</span>
+                    <span id="cartUsed">0</span>
+                </div>
+                <div class="cart-summary-row total">
+                    <span>Créditos Restantes:</span>
+                    <span id="cartRemaining">600</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="courseModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Curso</h2>
+            </div>
+            <form id="courseForm">
+                <input type="hidden" id="courseId">
+
+                <div class="form-group full">
+                    <label class="form-label">Nombre del Curso</label>
+                    <input type="text" id="inputTitle" class="form-control" required
+                        placeholder="Ej: Master en Data Science">
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Categoría</label>
+                        <input type="text" id="inputCategory" class="form-control" placeholder="Ej: Marketing">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input type="date" id="inputDate" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Modalidad</label>
+                        <select id="inputModality" class="form-control">
+                            <option value="Virtual Live">Virtual Live</option>
+                            <option value="Semipresencial">Semipresencial</option>
+                            <option value="Online">Online</option>
+                            <option value="Presencial">Presencial</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Precio (€)</label>
+                        <input type="number" id="inputPrice" class="form-control" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Horas</label>
+                        <input type="number" id="inputHours" class="form-control" required min="0" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Créditos</label>
+                        <input type="number" id="inputCredits" class="form-control" required min="0" value="100">
+                    </div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label">URL / Enlace Web</label>
+                    <input type="url" id="inputUrl" class="form-control" placeholder="https://...">
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label">URL Imagen Cabecera (Opcional)</label>
+                    <input type="url" id="inputImage" class="form-control"
+                        placeholder="https://... (Dejar vacío para usar imagen automática)">
+                </div>
+
+                <div class="form-group full checkbox-wrapper">
+                    <input type="checkbox" id="inputExpiredManual">
+                    <label for="inputExpiredManual">Marcar como "Plazo Finalizado"</label>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Helpers & Config ---
+
+        function getImageByCategory(category, title) {
+            const text = (category + " " + title).toLowerCase();
+            // Using high quality Unsplash IDs
+            if (text.includes('agro')) return 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=80';
+            if (text.includes('financ') || text.includes('inver') || text.includes('tribut') || text.includes('fisc') || text.includes('riesgo')) return 'https://images.unsplash.com/photo-1554224155-98406352fa8f?auto=format&fit=crop&w=600&q=80';
+            if (text.includes('data') || text.includes('python') || text.includes('ia ') || text.includes('intelligence') || text.includes('power bi')) return 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80';
+            if (text.includes('market') || text.includes('comerc') || text.includes('venta')) return 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?auto=format&fit=crop&w=600&q=80';
+            if (text.includes('rrhh') || text.includes('person') || text.includes('talent') || text.includes('laboral')) return 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=80';
+            if (text.includes('logist') || text.includes('operacion') || text.includes('supply')) return 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80';
+            return 'img/default-pattern.png';
+        }
+
+        function parseExcelDate(excelDate) {
+            if (typeof excelDate === 'string' && excelDate.includes('/')) {
+                const parts = excelDate.split('/');
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            if (!isNaN(excelDate)) {
+                const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
+                return date.toISOString().split('T')[0];
+            }
+            return new Date().toISOString().split('T')[0];
+        }
+
+        // --- 2. State ---
+        const initialData = [
+            { id: 1, date: "2026-01-20", title: "Ejemplo: Master en Data Science", modality: "Virtual Live", price: 4500, category: "Data & Analytics", url: "#", manualExpiration: false, hours: 20, credits: 200 },
+            { id: 2, date: "2023-01-01", title: "Ejemplo: Curso Pasado", modality: "Online", price: 200, category: "Archivo", url: "", manualExpiration: false, hours: 10, credits: 100 }
+        ];
+
+        let courses = JSON.parse(localStorage.getItem('enae_courses_v5')) || initialData;
+        // Migration for old data
+        courses = courses.map(c => ({
+            ...c,
+            hours: c.hours || 10,
+            credits: c.credits || (c.hours ? c.hours * 10 : 100)
+        }));
+
+        let isAdminMode = false;
+        let selectedCourses = new Set();
+        const TOTAL_CREDITS = 600;
+
+        // DOM Elements
+        const container = document.getElementById('courseContainer');
+        const btnAdd = document.getElementById('btnAddCourse');
+        const btnImport = document.getElementById('btnImport');
+        const btnDeleteAll = document.getElementById('btnDeleteAll');
+        const fileInput = document.getElementById('fileInput');
+        const modalOverlay = document.getElementById('courseModal');
+        const courseForm = document.getElementById('courseForm');
+        const adminToggle = document.getElementById('adminToggle');
+
+        // --- 3. Core Functions ---
+
+        function saveCourses() {
+            localStorage.setItem('enae_courses_v5', JSON.stringify(courses));
+            populateCategoryFilter();
+            filterAndRender();
+        }
+
+        function renderCourses(data) {
+            container.innerHTML = '';
+            if (data.length === 0) {
+                container.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <h3>No se encontraron cursos</h3>
+                    <p>Intenta ajustar los filtros o tu búsqueda.</p>
+                </div>`;
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            data.forEach(course => {
+                const courseDate = new Date(course.date);
+                const dateStr = courseDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+                const priceFormatted = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(course.price);
+                // Priority: Custom Image -> Category Image -> Default Pattern
+                const imageUrl = course.image || getImageByCategory(course.category || '', course.title);
+
+                const isExpired = courseDate < today || course.manualExpiration === true;
+
+                const expiredOverlay = isExpired
+                    ? `<div class="expired-overlay">
+                    <div class="expired-badge">Finalizado</div>
+                   </div>`
+                    : '';
+
+                const urlButton = course.url
+                    ? `<a href="${course.url}" target="_blank" class="btn-link" onclick="event.stopPropagation()">
+                    Ver Web <i class="fas fa-arrow-right"></i>
+                   </a>`
+                    : '<span class="text-muted"></span>';
+
+                const card = document.createElement('article');
+                card.className = 'card';
+                if (isExpired && !isAdminMode) card.style.opacity = "0.75";
+
+                const isSelected = selectedCourses.has(course.id);
+
+                const actionBtn = !isExpired ? `
+                    <button class="btn btn-add-cart ${isSelected ? 'selected' : 'default'}" 
+                        onclick="toggleSelection(${course.id}, ${!isSelected})">
+                        ${isSelected
+                        ? '<i class="fas fa-check"></i> Seleccionado'
+                        : `<i class="fas fa-plus"></i> Añadir (${course.credits} Cr)`}
+                    </button>
+                ` : '';
+
+                card.innerHTML = `
+                <div class="card-image-wrapper">
+                    ${expiredOverlay}
+                    <img src="${imageUrl}" class="card-image" alt="${course.title}">
+                    <div class="card-badge">${course.category || 'Formación'}</div>
+                    
+                    <div class="card-actions" style="display: ${isAdminMode ? 'flex' : 'none'}">
+                        <button class="action-btn edit-btn" onclick="editCourse(${course.id})"><i class="fas fa-pen"></i></button>
+                        <button class="action-btn delete-btn" onclick="deleteCourse(${course.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+
+                <div class="card-content">
+                    <h3 class="card-title" title="${course.title}">${course.title}</h3>
+                    
+                    <div class="card-meta">
+                        <div class="meta-item">
+                            <i class="far fa-calendar-alt"></i> <span>${dateStr}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="far fa-user"></i> <span>${course.modality}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="far fa-clock"></i> <span>${course.hours} Horas</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="price-tag">${course.price}€</div>
+                        ${urlButton}
+                    </div>
+                    ${actionBtn}
+                </div>
+            `;
+                container.appendChild(card);
+            });
+            updateGlobalCredits();
+        }
+
+        function updateGlobalCredits() {
+            let used = 0;
+            selectedCourses.forEach(id => {
+                const c = courses.find(x => x.id === id);
+                if (c) used += c.credits;
+            });
+            const remaining = TOTAL_CREDITS - used;
+
+            // Header Counter
+            const el = document.getElementById('globalCredits');
+            if (el) {
+                el.innerText = remaining;
+                el.style.color = remaining < 0 ? 'var(--danger)' : 'var(--accent)';
+            }
+
+            // Cart Badge
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+                badge.innerText = selectedCourses.size;
+                if (selectedCourses.size > 0) badge.classList.add('active');
+                else badge.classList.remove('active');
+            }
+
+            // Cart Footer
+            const countEl = document.getElementById('cartCount');
+            if (countEl) countEl.innerText = selectedCourses.size;
+
+            const usedEl = document.getElementById('cartUsed');
+            if (usedEl) usedEl.innerText = used;
+
+            const remainingEl = document.getElementById('cartRemaining');
+            if (remainingEl) {
+                remainingEl.innerText = remaining;
+                remainingEl.style.color = remaining < 0 ? 'var(--danger)' : 'var(--accent)';
+            }
+
+            renderCartItems();
+        }
+
+        function renderCartItems() {
+            const cartBody = document.getElementById('cartBody');
+            if (!cartBody) return;
+            cartBody.innerHTML = '';
+
+            if (selectedCourses.size === 0) {
+                cartBody.innerHTML = `
+                    <div class="cart-empty">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>No has seleccionado ningún curso aún.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            selectedCourses.forEach(id => {
+                const c = courses.find(x => x.id === id);
+                if (!c) return;
+
+                const item = document.createElement('div');
+                item.className = 'cart-item';
+                item.innerHTML = `
+                    <div class="cart-item-content">
+                        <div class="cart-item-title">${c.title}</div>
+                        <div class="cart-item-meta">
+                            <span><i class="far fa-clock"></i> ${c.hours}h</span>
+                            <span style="color: var(--accent); font-weight: 600;">${c.credits} Créditos</span>
+                        </div>
+                    </div>
+                    <button class="cart-item-remove" onclick="toggleSelection(${c.id}, false)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                cartBody.appendChild(item);
+            });
+        }
+
+        window.toggleCart = function () {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('cartOverlay');
+            if (drawer && overlay) {
+                drawer.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+
+        window.toggleSelection = function (id, isChecked) {
+            const course = courses.find(c => c.id === id);
+            if (isChecked) {
+                selectedCourses.add(id);
+                if (course) showToast(`"${course.title}" añadido al carrito`, 'success');
+            } else {
+                selectedCourses.delete(id);
+                if (course) showToast(`"${course.title}" eliminado del carrito`, 'info');
+            }
+            updateGlobalCredits();
+            filterAndRender();
+        }
+
+        // --- Toast System ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+
+            toast.innerHTML = `
+                <i class="fas fa-${icon}" style="font-size: 1.2rem; color: var(--${type === 'info' ? 'primary' : type})"></i>
+                <div class="toast-content">
+                    <div class="toast-title">${type === 'success' ? 'Éxito' : (type === 'error' ? 'Error' : 'Información')}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto remove
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- 4. Import & Admin ---
+
+        btnImport.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                // Helper for price parsing
+                const parsePrice = (val) => {
+                    if (typeof val === 'number') return val;
+                    if (typeof val === 'string') {
+                        // Remove currency symbols and other non-numeric chars except dot/comma
+                        // This simple regex keeps digits, dots and commas
+                        const clean = val.replace(/[^\d.,]/g, '').replace(',', '.');
+                        const num = parseFloat(clean);
+                        return isNaN(num) ? 0 : num;
+                    }
+                    return 0;
+                };
+
+                if (confirm(`Se han encontrado ${jsonData.length} cursos. ¿Añadir al catálogo?`)) {
+                    const newCourses = jsonData.map((row, index) => {
+                        return {
+                            id: Date.now() + index,
+                            title: row['Nombre del Curso'] || 'Sin Título',
+                            category: row['Categoría'] || 'General',
+                            date: row['Fecha Inicio'] ? parseExcelDate(row['Fecha Inicio']) : new Date().toISOString().split('T')[0],
+                            modality: row['Modalidad'] || 'Online',
+                            price: parsePrice(row['Precio (€)']),
+                            url: row['URL'] || '',
+                            manualExpiration: false,
+                            hours: 10, // Default for imported
+                            credits: 100
+                        };
+                    });
+                    courses = [...courses, ...newCourses];
+                    saveCourses();
+                    showToast('¡Cursos importados correctamente!', 'success');
+                    fileInput.value = '';
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        btnDeleteAll.addEventListener('click', () => {
+            if (confirm('¿Estás seguro de que quieres BORRAR TODOS los cursos? Esta acción no se puede deshacer.')) {
+                if (confirm('Confirmación final: ¿Borrar todo el catálogo?')) {
+                    courses = [];
+                    saveCourses();
+                    showToast('Catálogo reseteado correctamente.', 'success');
+                }
+            }
+        });
+
+        adminToggle.addEventListener('change', (e) => {
+            isAdminMode = e.target.checked;
+            btnAdd.style.display = isAdminMode ? 'inline-flex' : 'none';
+            btnImport.style.display = isAdminMode ? 'inline-flex' : 'none';
+            btnDeleteAll.style.display = isAdminMode ? 'inline-flex' : 'none';
+            renderCourses(courses);
+        });
+
+        // --- 5. Modal Logic ---
+
+        function openModal() {
+            modalOverlay.style.display = 'flex';
+            // Small delay to allow display:flex to apply before adding opacity class for transition
+            setTimeout(() => modalOverlay.classList.add('active'), 10);
+        }
+
+        window.closeModal = function () {
+            modalOverlay.classList.remove('active');
+            setTimeout(() => {
+                modalOverlay.style.display = 'none';
+            }, 300); // Wait for transition
+        }
+
+        btnAdd.addEventListener('click', () => {
+            document.getElementById('modalTitle').innerText = "Nuevo Curso";
+            courseForm.reset();
+            document.getElementById('courseId').value = "";
+            openModal();
+        });
+
+        window.editCourse = function (id) {
+            const c = courses.find(x => x.id === id);
+            if (c) {
+                document.getElementById('modalTitle').innerText = "Editar Curso";
+                document.getElementById('courseId').value = c.id;
+                document.getElementById('inputTitle').value = c.title;
+                document.getElementById('inputUrl').value = c.url || '';
+                document.getElementById('inputImage').value = c.image || '';
+                document.getElementById('inputCategory').value = c.category;
+                document.getElementById('inputDate').value = c.date;
+                document.getElementById('inputModality').value = c.modality;
+                document.getElementById('inputPrice').value = c.price;
+                document.getElementById('inputHours').value = c.hours || 10;
+                document.getElementById('inputCredits').value = c.credits || 100;
+                document.getElementById('inputExpiredManual').checked = c.manualExpiration === true;
+                openModal();
+            }
+        }
+
+        window.deleteCourse = function (id) {
+            if (confirm('¿Estás seguro de eliminar este curso?')) {
+                courses = courses.filter(c => c.id !== id);
+                saveCourses();
+            }
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modalOverlay) closeModal();
+        }
+
+        courseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('courseId').value;
+            const formData = {
+                title: document.getElementById('inputTitle').value,
+                url: document.getElementById('inputUrl').value,
+                image: document.getElementById('inputImage').value,
+                category: document.getElementById('inputCategory').value,
+                date: document.getElementById('inputDate').value,
+                modality: document.getElementById('inputModality').value,
+                price: Number(document.getElementById('inputPrice').value),
+                hours: Number(document.getElementById('inputHours').value),
+                credits: Number(document.getElementById('inputCredits').value),
+                manualExpiration: document.getElementById('inputExpiredManual').checked
+            };
+
+            if (id) {
+                const idx = courses.findIndex(c => c.id == id);
+                if (idx !== -1) courses[idx] = { ...courses[idx], ...formData };
+            } else {
+                courses.push({ id: Date.now(), ...formData });
+            }
+            saveCourses();
+            closeModal();
+        });
+
+        // --- 6. Filters ---
+        function populateCategoryFilter() {
+            const categories = [...new Set(courses.map(c => c.category).filter(Boolean))].sort();
+            const select = document.getElementById('categoryFilter');
+            const current = select.value;
+
+            select.innerHTML = '<option value="all">Todas las Categorías</option>';
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+
+            // Restore selection if possible
+            if (categories.includes(current)) select.value = current;
+        }
+
+        function filterAndRender() {
+            let filtered = [...courses];
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const mod = document.getElementById('modalityFilter').value;
+            const cat = document.getElementById('categoryFilter').value;
+            const sort = document.getElementById('sortOrder').value;
+
+            if (term) filtered = filtered.filter(c => c.title.toLowerCase().includes(term) || (c.category && c.category.toLowerCase().includes(term)));
+            if (mod !== 'all') filtered = filtered.filter(c => c.modality === mod);
+            if (cat !== 'all') filtered = filtered.filter(c => c.category === cat);
+
+            if (sort === 'price_asc') filtered.sort((a, b) => a.price - b.price);
+            if (sort === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+            if (sort === 'date_asc') filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+            if (sort === 'date_desc') filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            renderCourses(filtered);
+            renderActiveFilters();
+        }
+
+        function renderActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const term = document.getElementById('searchInput').value;
+            const mod = document.getElementById('modalityFilter').value;
+            const cat = document.getElementById('categoryFilter').value;
+
+            const addTag = (text, onClick) => {
+                const tag = document.createElement('div');
+                tag.className = 'filter-tag';
+                tag.innerHTML = `<span>${text}</span> <i class="fas fa-times"></i>`;
+                tag.querySelector('i').onclick = onClick;
+                container.appendChild(tag);
+            };
+
+            if (term) {
+                addTag(`Búsqueda: "${term}"`, () => {
+                    document.getElementById('searchInput').value = '';
+                    filterAndRender();
+                });
+            }
+
+            if (mod !== 'all') {
+                addTag(`Modalidad: ${mod}`, () => {
+                    document.getElementById('modalityFilter').value = 'all';
+                    filterAndRender();
+                });
+            }
+
+            if (cat !== 'all') {
+                addTag(`Categoría: ${cat}`, () => {
+                    document.getElementById('categoryFilter').value = 'all';
+                    filterAndRender();
+                });
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterAndRender);
+        document.getElementById('modalityFilter').addEventListener('change', filterAndRender);
+        document.getElementById('categoryFilter').addEventListener('change', filterAndRender);
+        document.getElementById('sortOrder').addEventListener('change', filterAndRender);
+
+        // Auto-calc credits
+        document.getElementById('inputHours').addEventListener('input', (e) => {
+            const h = Number(e.target.value);
+            document.getElementById('inputCredits').value = h * 10;
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ensure courses are loaded
+            if (!courses || courses.length === 0) {
+                courses = initialData;
+                saveCourses();
+            }
+
+            populateCategoryFilter();
+            filterAndRender();
+        });
+
+    </script>
+
+</body>
+
+</html>

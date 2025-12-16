@@ -21,25 +21,25 @@
         /* --- Design System --- */
         :root {
             /* Palette */
-            --primary: #0f172a;
-            /* Slate 900 */
-            --primary-light: #1e293b;
-            /* Slate 800 */
-            --accent: #f97316;
-            /* Orange 500 */
-            --accent-hover: #ea580c;
-            /* Orange 600 */
+            --primary: #2C2C2C;
+            /* Header background, Headings */
+            --primary-light: #404040;
+            /* Hover states for primary */
+
+            --accent: #A42641;
+            /* Buttons, Actions */
+            --accent-hover: #8B2037;
+            /* Darker shade of #A42641 */
 
             --bg-body: #f8fafc;
-            /* Slate 50 */
             --bg-surface: #ffffff;
 
-            --text-main: #334155;
-            /* Slate 700 */
-            --text-dark: #0f172a;
-            /* Slate 900 */
-            --text-light: #64748b;
-            /* Slate 500 */
+            --text-main: #4D4D4D;
+            /* Paragraphs, Body */
+            --text-dark: #2C2C2C;
+            /* Headings */
+            --text-light: #4D4D4D;
+            /* Secondary text */
 
             --border: #e2e8f0;
             /* Slate 200 */
@@ -403,9 +403,21 @@
         /* --- Grid & Cards --- */
         .course-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(1, 1fr);
             gap: 2rem;
             padding-bottom: 4rem;
+        }
+
+        @media (min-width: 768px) {
+            .course-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .course-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         .card {

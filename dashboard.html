@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Formación - ENAEpass</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* Palette - Same as index */
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --bg-body: #f8fafc;
+            --bg-surface: #ffffff;
+            --text-main: #334155;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        /* Main */
+        main {
+            padding: 3rem 0;
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card */
+        .course-card {
+            background: var(--bg-surface);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-image {
+            height: 160px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: auto;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.completed {
+            background: var(--success);
+        }
+
+        .card-actions {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-complete {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-done {
+            background: var(--success);
+            color: white;
+            cursor: default;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-light);
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="index.html" class="brand">
+                <div class="brand-logo">M</div>
+                <div class="brand-text">Mi Formación</div>
+            </a>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Volver al Catálogo
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Cursos Inscritos</h1>
+
+        <div id="coursesGrid" class="dashboard-grid">
+            <!-- JS populated -->
+        </div>
+    </main>
+
+    <script>
+        // 1. Data Loading
+        // We need both the catalog (for details) and my_courses (for progress)
+        const catalog = JSON.parse(localStorage.getItem('enae_courses_v5')) || [];
+        const myCourses = JSON.parse(localStorage.getItem('enae_my_courses')) || [];
+
+        const grid = document.getElementById('coursesGrid');
+
+        function render() {
+            grid.innerHTML = '';
+
+            if (myCourses.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-graduation-cap" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <h3>Aún no tienes cursos</h3>
+                        <p>Vuelve al catálogo para inscribirte en nuevos cursos.</p>
+                        <br>
+                        <a href="index.html" class="btn btn-complete">Ir al Catálogo</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort: Incomplete first, then by date enrolled (mocked order for now)
+            myCourses.sort((a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1);
+
+            myCourses.forEach(record => {
+                const course = catalog.find(c => c.id === record.id);
+                if (!course) return; // Should not happen ideally
+
+                const isCompleted = record.completed;
+                const progress = record.progress;
+
+                // Image helper (simplified version of index.html logic)
+                let imageUrl = course.image;
+                if (!imageUrl) {
+                    // Quick fallback logic or just default
+                    imageUrl = 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80';
+                }
+
+                const card = document.createElement('article');
+                card.className = 'course-card';
+                card.innerHTML = `
+                    <img src="${imageUrl}" class="card-image" alt="${course.title}">
+                    <div class="card-body">
+                        <div class="card-category">${course.category || 'Curso'}</div>
+                        <h3 class="card-title">${course.title}</h3>
+                        
+                        <div class="progress-container">
+                            <div class="progress-labels">
+                                <span>Progreso</span>
+                                <span>${progress}%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill ${isCompleted ? 'completed' : ''}" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            ${isCompleted
+                        ? `<button class="btn btn-done"><i class="fas fa-check"></i> Completado</button>`
+                        : `<button class="btn btn-complete" onclick="markCompleted(${record.id})">Completar Curso</button>`
+                    }
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function markCompleted(id) {
+            const idx = myCourses.findIndex(c => c.id === id);
+            if (idx !== -1) {
+                if (confirm('¿Marcar este curso como completado al 100%?')) {
+                    myCourses[idx].progress = 100;
+                    myCourses[idx].completed = true;
+                    localStorage.setItem('enae_my_courses', JSON.stringify(myCourses));
+                    render();
+                }
+            }
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', render);
+    </script>
+</body>
+
+</html>

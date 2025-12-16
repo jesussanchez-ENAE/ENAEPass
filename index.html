@@ -157,6 +157,46 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
+        /* Credit Progress Bar */
+        .credit-bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            /* Align text to right */
+            gap: 4px;
+            margin-right: 1rem;
+        }
+
+        .credit-text {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .credit-progress-track {
+            width: 120px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .credit-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            /* Orange */
+            width: 100%;
+            /* Starts full */
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+        }
+
+        .credit-progress-fill.low {
+            background: var(--danger);
+        }
+
         .switch {
             position: relative;
             display: inline-block;
@@ -672,17 +712,78 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .controls-card {
-                flex-direction: column;
-                align-items: stretch;
+            .main-layout {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
             }
 
-            .filters {
-                flex-direction: column;
+            .sidebar {
+                display: none;
+                /* Hidden by default on mobile */
+                background: white;
+                padding: 1.5rem;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                margin-bottom: 2rem;
             }
 
-            .form-grid {
-                grid-template-columns: 1fr;
+            .sidebar.active {
+                display: block;
+                animation: slideDown 0.3s ease-out;
+            }
+
+            .mobile-filter-btn {
+                display: flex !important;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-box {
+                width: 100%;
+                margin: 0 !important;
+                order: 3;
+                /* Move search to bottom of header on mobile */
+            }
+
+            .brand {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        .mobile-filter-btn {
+            display: none;
+            width: 100%;
+            padding: 12px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mobile-filter-btn:hover {
+            background: var(--bg-body);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -744,7 +845,8 @@
             cursor: pointer;
             color: var(--text-main);
             transition: all 0.2s;
-            margin-left: 1.5rem;
+            margin-left: 0.5rem;
+            /* Adjusted for mobile space */
         }
 
         .cart-trigger:hover {
@@ -1095,6 +1197,17 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 1rem;">
+
+                <!-- Credit Progress Bar -->
+                <div class="credit-bar-container" title="Créditos disponibles">
+                    <div class="credit-text">
+                        <span id="creditText">600</span> Créditos
+                    </div>
+                    <div class="credit-progress-track">
+                        <div class="credit-progress-fill" id="creditFill"></div>
+                    </div>
+                </div>
+
                 <!-- Admin Controls moved here for better space usage if needed, or kept hidden/toggleable -->
                 <div class="admin-toggle-wrapper" title="Modo Administrador">
                     <i class="fas fa-user-shield" style="color: var(--text-light);"></i>
@@ -1121,8 +1234,13 @@
     <main class="container main-layout"
         style="display: grid; grid-template-columns: 260px 1fr; gap: 3rem; padding-top: 2rem;">
 
+        <!-- Mobile Filter Toggle -->
+        <button class="mobile-filter-btn" onclick="toggleSidebar()">
+            <i class="fas fa-filter"></i> Filtrar Cursos
+        </button>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="mainSidebar">
 
             <div class="sidebar-section">
                 <h3 class="sidebar-title">Cursos</h3>
@@ -1456,6 +1574,11 @@
             updateGlobalCredits();
         }
 
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            if (sidebar) sidebar.classList.toggle('active');
+        }
+
         function updateGlobalCredits() {
             let used = 0;
             selectedCourses.forEach(id => {
@@ -1464,11 +1587,21 @@
             });
             const remaining = TOTAL_CREDITS - used;
 
-            // Header Counter
-            const el = document.getElementById('globalCredits');
-            if (el) {
-                el.innerText = remaining;
-                el.style.color = remaining < 0 ? 'var(--danger)' : 'var(--accent)';
+            // Header Progress Bar
+            const creditFill = document.getElementById('creditFill');
+            const creditText = document.getElementById('creditText');
+
+            if (creditFill && creditText) {
+                const percentage = Math.max(0, (remaining / TOTAL_CREDITS) * 100);
+                creditFill.style.width = `${percentage}%`;
+                creditText.innerText = remaining;
+
+                // Color change if low
+                if (percentage < 20) {
+                    creditFill.classList.add('low');
+                } else {
+                    creditFill.classList.remove('low');
+                }
             }
 
             // Cart Badge
@@ -1649,9 +1782,8 @@
 
         adminToggle.addEventListener('change', (e) => {
             isAdminMode = e.target.checked;
-            btnAdd.style.display = isAdminMode ? 'inline-flex' : 'none';
-            btnImport.style.display = isAdminMode ? 'inline-flex' : 'none';
-            btnDeleteAll.style.display = isAdminMode ? 'inline-flex' : 'none';
+            const panel = document.getElementById('adminPanel');
+            if (panel) panel.style.display = isAdminMode ? 'block' : 'none';
             renderCourses(courses);
         });
 

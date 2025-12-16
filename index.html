@@ -1229,6 +1229,11 @@
                     </label>
                 </div>
 
+                <a href="dashboard.html" class="btn btn-secondary"
+                    style="padding: 8px 16px; font-size: 0.85rem; border-radius: 99px; text-decoration: none;">
+                    <i class="fas fa-graduation-cap"></i> Mi Formación
+                </a>
+
                 <div class="cart-trigger" onclick="toggleCart()">
                     <i class="fas fa-shopping-cart"></i>
                     <div class="cart-badge" id="cartBadge">0</div>
@@ -1271,6 +1276,16 @@
                     <li class="sidebar-item" data-filter="soon" onclick="setSidebarFilter(this, 'date', 'soon')">A
                         puntos de empezar</li>
                 </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Estado</h3>
+                <div class="checkbox-wrapper" style="background: transparent; border: none; padding: 0;">
+                    <input type="checkbox" id="hideExpiredFilter" onchange="toggleExpiredFilter(this)">
+                    <label for="hideExpiredFilter"
+                        style="color: var(--text-light); font-weight: 400; font-size: 0.95rem;">Ocultar
+                        finalizados</label>
+                </div>
             </div>
 
             <div class="sidebar-section">
@@ -1354,6 +1369,10 @@
                     <span>Créditos Restantes:</span>
                     <span id="cartRemaining">600</span>
                 </div>
+                <button class="btn btn-primary" onclick="confirmSelection()"
+                    style="width: 100%; margin-top: 1rem; justify-content: center;">
+                    Confirmar Selección <i class="fas fa-check-circle"></i>
+                </button>
             </div>
         </div>
 
@@ -1729,6 +1748,44 @@
             }, 3000);
         }
 
+        // --- 4. Cart Logic Update ---
+
+        function confirmSelection() {
+            if (selectedCourses.size === 0) {
+                showToast('La cesta está vacía', 'warning');
+                return;
+            }
+
+            if (confirm(`¿Confirmar inscripción en ${selectedCourses.size} cursos?`)) {
+                // Get existing my courses
+                let myCourses = JSON.parse(localStorage.getItem('enae_my_courses')) || [];
+
+                // Add new ones (avoid duplicates)
+                selectedCourses.forEach(id => {
+                    if (!myCourses.find(c => c.id === id)) {
+                        myCourses.push({
+                            id: id,
+                            progress: 0,
+                            completed: false,
+                            enrolledDate: new Date().toISOString()
+                        });
+                    }
+                });
+
+                // Save
+                localStorage.setItem('enae_my_courses', JSON.stringify(myCourses));
+
+                // Clear cart? Maybe not strictly necessary if we want to keep selection, but usually checkout clears cart.
+                // For this demo let's clear it
+                selectedCourses.clear();
+                updateGlobalCredits();
+                window.toggleCart(); // Use the existing global toggleCart
+
+                // Redirect
+                window.location.href = 'dashboard.html';
+            }
+        }
+
         // --- 4. Import & Admin ---
 
         btnImport.addEventListener('click', () => fileInput.click());
@@ -1883,8 +1940,14 @@
             search: '',
             category: 'all',
             modality: 'all',
-            date: 'all' // 'all', 'soon'
+            date: 'all', // 'all', 'soon'
+            hideExpired: false
         };
+
+        function toggleExpiredFilter(checkbox) {
+            activeFilters.hideExpired = checkbox.checked;
+            filterAndRender();
+        }
 
         function setSidebarFilter(element, type, value) {
             // Update State
@@ -1937,6 +2000,8 @@
 
         function filterAndRender() {
             let filtered = [...courses];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
             // 1. Search
             const term = document.getElementById('searchInput').value.toLowerCase();
@@ -1957,7 +2022,6 @@
 
             // 4. Date / Special
             if (activeFilters.date === 'soon') {
-                const today = new Date();
                 const nextMonth = new Date();
                 nextMonth.setDate(today.getDate() + 30);
 
@@ -1967,7 +2031,16 @@
                 });
             }
 
-            // 5. Sorting
+            // 5. Hide Expired
+            if (activeFilters.hideExpired) {
+                filtered = filtered.filter(c => {
+                    const cDate = new Date(c.date);
+                    const isExpired = cDate < today || c.manualExpiration === true;
+                    return !isExpired;
+                });
+            }
+
+            // 6. Sorting
             const sort = document.getElementById('sortOrder').value;
             if (sort === 'price_asc') filtered.sort((a, b) => a.price - b.price);
             if (sort === 'price_desc') filtered.sort((a, b) => b.price - a.price);

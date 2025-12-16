@@ -97,13 +97,14 @@
 
         /* --- Header --- */
         header {
-            background-color: var(--bg-surface);
+            background-color: var(--primary);
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 100;
             padding: 1rem 0;
             box-shadow: var(--shadow-sm);
+            color: white;
         }
 
         .header-content {
@@ -121,20 +122,22 @@
         .brand-logo {
             width: 40px;
             height: 40px;
-            background: var(--primary);
+            background: white;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--primary);
             font-weight: 700;
             font-size: 1.2rem;
         }
 
         .brand-text {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
             letter-spacing: -0.02em;
+            color: white;
+            font-family: 'Outfit', sans-serif;
         }
 
         /* Admin Toggle */
@@ -142,16 +145,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: var(--bg-body);
+            background: rgba(255, 255, 255, 0.1);
             padding: 6px 16px;
             border-radius: 99px;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .admin-label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: var(--text-light);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .switch {
@@ -200,22 +203,50 @@
             transform: translateX(18px);
         }
 
-        /* --- Controls Section --- */
-        .controls-section {
-            padding: 2rem 0;
+        /* --- Sidebar & Main Grid --- */
+        .sidebar {
+            padding-right: 1rem;
         }
 
-        .controls-card {
-            background: var(--bg-surface);
-            padding: 1.25rem;
-            border-radius: 16px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
+        .sidebar-section {
+            margin-bottom: 2.5rem;
         }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .sidebar-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-item {
+            padding: 8px 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .sidebar-item:hover {
+            color: var(--text-dark);
+            text-decoration: underline;
+            text-decoration-color: var(--accent);
+        }
+
+        .sidebar-item.active {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* --- Controls Section Removal / Adjustment --- */
+        /* Search inputs etc are now global or different, keeping base styles */
 
         /* Inputs */
         .input-group {
@@ -234,10 +265,11 @@
         .form-control {
             padding: 10px 14px 10px 40px;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 4px;
+            /* More rectangular per image */
             font-size: 0.95rem;
             color: var(--text-dark);
-            background: var(--bg-body);
+            background: white;
             transition: all 0.2s;
             outline: none;
             width: 100%;
@@ -245,32 +277,30 @@
 
         .form-control:focus {
             border-color: var(--accent);
-            background: white;
             box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
         }
 
-        select.form-control {
-            padding-left: 14px;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 16px;
-            padding-right: 40px;
-        }
-
         .search-box {
-            flex: 2;
-            min-width: 280px;
+            /* flex: 2; Removed as direct child flex prop */
+            width: 100%;
         }
 
-        .filters {
-            display: flex;
-            gap: 1rem;
-            flex: 1;
-            min-width: 300px;
+        .search-box .form-control {
+            background: #334155;
+            /* Darker bg for input in dark header */
+            border: none;
+            color: white;
         }
+
+        .search-box .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-box i {
+            color: #94a3b8;
+        }
+
+        /* Buttons */
 
         /* Buttons */
         .btn {
@@ -1057,12 +1087,15 @@
                 <div class="brand-text">Catálogo Formativo</div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="credit-counter-wrapper">
-                    <span class="credit-label">Créditos:</span>
-                    <span class="credit-value" id="globalCredits">600</span>
-                </div>
+            <!-- Search Box Moved to Header -->
+            <div class="search-box input-group" style="margin: 0 2rem; max-width: 500px;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" class="form-control" placeholder="Busca cualquier curso"
+                    style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: var(--text-dark);">
+            </div>
 
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <!-- Admin Controls moved here for better space usage if needed, or kept hidden/toggleable -->
                 <div class="admin-toggle-wrapper" title="Modo Administrador">
                     <i class="fas fa-user-shield" style="color: var(--text-light);"></i>
                     <label class="switch" style="transform: scale(0.8);">
@@ -1075,68 +1108,92 @@
                     <i class="fas fa-shopping-cart"></i>
                     <div class="cart-badge" id="cartBadge">0</div>
                 </div>
+                <!-- Credit Counter moved/styled differently if needed, keeping simple for now -->
+                <div class="credit-counter-wrapper" style="display: none;">
+                    <!-- Hidden temporarily as per design focus, or keep? Design doesn't show it clearly, let's keep it but maybe less obtrusive if requested. For now, I'll hide it to match the clean design looking at the image, user didn't explicitly ask to remove but "adjust to design" -->
+                    <span class="credit-label">Créditos:</span>
+                    <span class="credit-value" id="globalCredits">600</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="container">
-        <!-- Controls -->
-        <section class="controls-section">
-            <div class="controls-card">
-                <!-- Admin Buttons -->
-                <button class="btn btn-primary" id="btnAddCourse" style="display: none;">
-                    <i class="fas fa-plus"></i> Nuevo Curso
+    <main class="container main-layout"
+        style="display: grid; grid-template-columns: 260px 1fr; gap: 3rem; padding-top: 2rem;">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Cursos</h3>
+                <ul class="sidebar-list">
+                    <li class="sidebar-item active" data-filter="all" onclick="setSidebarFilter(this, 'all', 'all')">
+                        Todos los cursos</li>
+                    <li class="sidebar-item" data-filter="ia" onclick="setSidebarFilter(this, 'category', 'IA')">IA</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Modalidad</h3>
+                <ul class="sidebar-list">
+                    <li class="sidebar-item" data-filter="grabados"
+                        onclick="setSidebarFilter(this, 'modality', 'Online')">Grabados</li>
+                    <li class="sidebar-item" data-filter="soon" onclick="setSidebarFilter(this, 'date', 'soon')">A
+                        puntos de empezar</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Áreas</h3>
+                <ul class="sidebar-list" id="categoryList">
+                    <!-- Javascript populated -->
+                </ul>
+            </div>
+
+            <!-- Admin Buttons moved to sidebar or keep hidden? Let's keep them in a clearer place later, or just append here for Admin context -->
+            <div class="admin-actions" style="margin-top: 2rem; display: none;" id="adminPanel">
+                <button class="btn btn-primary btn-sm" id="btnAddCourse" style="width: 100%; margin-bottom:0.5rem">
+                    <i class="fas fa-plus"></i> Nuevo
                 </button>
-                <button class="btn btn-secondary" id="btnImport" style="display: none;">
-                    <i class="fas fa-file-import"></i> Importar Excel
+                <button class="btn btn-secondary btn-sm" id="btnImport" style="width: 100%; margin-bottom:0.5rem">
+                    <i class="fas fa-file-import"></i> Excel
                 </button>
-                <button class="btn btn-secondary" id="btnDeleteAll"
-                    style="display: none; background-color: var(--danger); color: white;">
-                    <i class="fas fa-trash-alt"></i> Borrar Todo
+                <button class="btn btn-danger btn-sm" id="btnDeleteAll" style="width: 100%;">
+                    <i class="fas fa-trash"></i> Reset
                 </button>
                 <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" style="display: none;">
+            </div>
 
-                <!-- Search -->
-                <div class="search-box input-group">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar curso, categoría...">
+        </aside>
+
+        <!-- Main Content -->
+        <section class="content">
+
+            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <h1 id="pageTitle" style="font-size: 2rem; font-weight: 700; color: var(--text-dark);">Cursos de
+                    ENAEpass</h1>
+
+                <!-- Sort dropdown kept right aligned -->
+                <div class="input-group" style="width: 200px;">
+                    <select id="sortOrder" class="form-control"
+                        style="background: transparent; border: none; font-weight: 600; text-align: right; padding-right: 20px;">
+                        <option value="date_asc">Fecha: Próximos</option>
+                        <option value="date_desc">Fecha: Lejanos</option>
+                        <option value="price_asc">Precio: Menor a Mayor</option>
+                        <option value="price_desc">Precio: Mayor a Menor</option>
+                    </select>
                 </div>
+            </div>
 
-                <!-- Filters -->
-                <div class="filters">
-                    <div class="input-group" style="flex:1">
-                        <select id="categoryFilter" class="form-control">
-                            <option value="all">Todas las Categorías</option>
-                        </select>
-                    </div>
-                    <div class="input-group" style="flex:1">
-                        <select id="modalityFilter" class="form-control">
-                            <option value="all">Todas las Modalidades</option>
-                            <option value="Virtual Live">Virtual Live</option>
-                            <option value="Semipresencial">Semipresencial</option>
-                            <option value="Online">Online</option>
-                            <option value="Presencial">Presencial</option>
-                        </select>
-                    </div>
-                    <div class="input-group" style="flex:1">
-                        <select id="sortOrder" class="form-control">
-                            <option value="date_asc">Fecha: Próximos</option>
-                            <option value="date_desc">Fecha: Lejanos</option>
-                            <option value="price_asc">Precio: Menor a Mayor</option>
-                            <option value="price_desc">Precio: Mayor a Menor</option>
-                        </select>
-                    </div>
-                </div>
+            <!-- Active Filters Display -->
+            <div id="activeFilters" class="active-filters" style="margin-bottom: 1.5rem"></div>
 
-                <!-- Active Filters -->
-                <div id="activeFilters" class="active-filters"></div>
+            <!-- Grid -->
+            <div id="courseContainer" class="course-grid">
+                <!-- JS Rendered Content -->
             </div>
         </section>
 
-        <!-- Grid -->
-        <div id="courseContainer" class="course-grid">
-            <!-- JS Rendered Content -->
-        </div>
         <!-- Toast Container -->
         <div id="toast-container"></div>
 
@@ -1676,35 +1733,98 @@
             closeModal();
         });
 
-        // --- 6. Filters ---
+        // --- 6. Filters & Sidebar Logic ---
+
+        let activeFilters = {
+            search: '',
+            category: 'all',
+            modality: 'all',
+            date: 'all' // 'all', 'soon'
+        };
+
+        function setSidebarFilter(element, type, value) {
+            // Update State
+            if (type === 'all') {
+                activeFilters.category = 'all';
+                activeFilters.modality = 'all';
+                activeFilters.date = 'all';
+
+                // Reset UI
+                document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+                element.classList.add('active');
+            } else {
+                activeFilters[type] = value;
+
+                // Visual Selection Logic
+                // If clicking a category, remove active from "Todos" and other categories
+                if (type === 'category') {
+                    document.querySelector('.sidebar-item[data-filter="all"]').classList.remove('active');
+                    document.querySelectorAll('#categoryList .sidebar-item').forEach(el => el.classList.remove('active'));
+                    // Also uncheck IA if it's separate? Assuming IA is a category-like filter
+                    document.querySelector('.sidebar-item[data-filter="ia"]')?.classList.remove('active');
+                }
+                if (type === 'modality' || type === 'date') {
+                    // Toggle behavior or single select per section? 
+                    // Usually sidebar filters are single select per group or multi. 
+                    // For simplicity and matching typical behavior: Single select per section.
+                    const section = element.closest('.sidebar-list');
+                    section.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+                }
+
+                element.classList.add('active');
+            }
+
+            filterAndRender();
+        }
+
         function populateCategoryFilter() {
             const categories = [...new Set(courses.map(c => c.category).filter(Boolean))].sort();
-            const select = document.getElementById('categoryFilter');
-            const current = select.value;
+            const list = document.getElementById('categoryList');
+            list.innerHTML = ''; // Clear
 
-            select.innerHTML = '<option value="all">Todas las Categorías</option>';
             categories.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat;
-                option.textContent = cat;
-                select.appendChild(option);
+                const li = document.createElement('li');
+                li.className = 'sidebar-item';
+                li.textContent = cat;
+                li.onclick = () => setSidebarFilter(li, 'category', cat);
+                list.appendChild(li);
             });
-
-            // Restore selection if possible
-            if (categories.includes(current)) select.value = current;
         }
 
         function filterAndRender() {
             let filtered = [...courses];
+
+            // 1. Search
             const term = document.getElementById('searchInput').value.toLowerCase();
-            const mod = document.getElementById('modalityFilter').value;
-            const cat = document.getElementById('categoryFilter').value;
+            if (term) {
+                filtered = filtered.filter(c => c.title.toLowerCase().includes(term) || (c.category && c.category.toLowerCase().includes(term)));
+            }
+
+            // 2. Category
+            if (activeFilters.category !== 'all') {
+                // strict match
+                filtered = filtered.filter(c => c.category === activeFilters.category);
+            }
+
+            // 3. Modality
+            if (activeFilters.modality !== 'all') {
+                filtered = filtered.filter(c => c.modality === activeFilters.modality);
+            }
+
+            // 4. Date / Special
+            if (activeFilters.date === 'soon') {
+                const today = new Date();
+                const nextMonth = new Date();
+                nextMonth.setDate(today.getDate() + 30);
+
+                filtered = filtered.filter(c => {
+                    const cDate = new Date(c.date);
+                    return cDate >= today && cDate <= nextMonth;
+                });
+            }
+
+            // 5. Sorting
             const sort = document.getElementById('sortOrder').value;
-
-            if (term) filtered = filtered.filter(c => c.title.toLowerCase().includes(term) || (c.category && c.category.toLowerCase().includes(term)));
-            if (mod !== 'all') filtered = filtered.filter(c => c.modality === mod);
-            if (cat !== 'all') filtered = filtered.filter(c => c.category === cat);
-
             if (sort === 'price_asc') filtered.sort((a, b) => a.price - b.price);
             if (sort === 'price_desc') filtered.sort((a, b) => b.price - a.price);
             if (sort === 'date_asc') filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -1720,8 +1840,6 @@
             container.innerHTML = '';
 
             const term = document.getElementById('searchInput').value;
-            const mod = document.getElementById('modalityFilter').value;
-            const cat = document.getElementById('categoryFilter').value;
 
             const addTag = (text, onClick) => {
                 const tag = document.createElement('div');
@@ -1738,24 +1856,29 @@
                 });
             }
 
-            if (mod !== 'all') {
-                addTag(`Modalidad: ${mod}`, () => {
-                    document.getElementById('modalityFilter').value = 'all';
+            if (activeFilters.category !== 'all') {
+                addTag(`Categoría: ${activeFilters.category}`, () => {
+                    setSidebarFilter(document.querySelector('.sidebar-item[data-filter="all"]'), 'all', 'all'); // Reset to all
+                });
+            }
+            if (activeFilters.modality !== 'all') {
+                addTag(`Modalidad: ${activeFilters.modality}`, () => {
+                    activeFilters.modality = 'all';
+                    // Maintain UI consistency - hard to untoggle specific element without ref, simpler to just re-render or untoggle all in section
+                    document.querySelectorAll('.sidebar-section:nth-child(2) .sidebar-item').forEach(el => el.classList.remove('active'));
                     filterAndRender();
                 });
             }
-
-            if (cat !== 'all') {
-                addTag(`Categoría: ${cat}`, () => {
-                    document.getElementById('categoryFilter').value = 'all';
+            if (activeFilters.date !== 'all') {
+                addTag(`Filtro: Próximos`, () => {
+                    activeFilters.date = 'all';
+                    document.querySelectorAll('.sidebar-section:nth-child(2) .sidebar-item').forEach(el => el.classList.remove('active'));
                     filterAndRender();
                 });
             }
         }
 
         document.getElementById('searchInput').addEventListener('input', filterAndRender);
-        document.getElementById('modalityFilter').addEventListener('change', filterAndRender);
-        document.getElementById('categoryFilter').addEventListener('change', filterAndRender);
         document.getElementById('sortOrder').addEventListener('change', filterAndRender);
 
         // Auto-calc credits

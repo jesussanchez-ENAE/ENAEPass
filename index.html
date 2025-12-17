@@ -140,6 +140,19 @@
             font-family: 'Outfit', sans-serif;
         }
 
+        /* Hamburger Toggle */
+        .hamburger-btn {
+            display: none;
+            /* Hidden on desktop */
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 12px;
+        }
+
         /* Admin Toggle */
         .admin-toggle-wrapper {
             display: flex;
@@ -246,6 +259,80 @@
         /* --- Sidebar & Main Grid --- */
         .sidebar {
             padding-right: 1rem;
+        }
+
+        /* Nav Drawer Overlay */
+        .nav-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 1999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Navigation Drawer */
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            max-width: 280px;
+            background: white;
+            z-index: 2000;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-drawer.active {
+            transform: translateX(0);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .nav-drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 1099;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .sidebar-section {
@@ -729,14 +816,19 @@
                 gap: 1.5rem !important;
             }
 
+            /* Revert Sidebar to "Dropdown" style for filters */
             .sidebar {
                 display: none;
-                /* Hidden by default on mobile */
+                position: static;
+                width: 100%;
                 background: white;
                 padding: 1.5rem;
-                border-radius: 12px;
                 border: 1px solid var(--border);
-                margin-bottom: 2rem;
+                border-radius: 12px;
+                box-shadow: none;
+                transform: none;
+                z-index: 10;
+                margin-bottom: 1rem;
             }
 
             .sidebar.active {
@@ -744,8 +836,13 @@
                 animation: slideDown 0.3s ease-out;
             }
 
-            .mobile-filter-btn {
-                display: flex !important;
+            .hamburger-btn {
+                display: block !important;
+            }
+
+            /* Hide desktop header items */
+            .desktop-only {
+                display: none !important;
             }
 
             .header-content {
@@ -757,12 +854,15 @@
                 width: 100%;
                 margin: 0 !important;
                 order: 3;
-                /* Move search to bottom of header on mobile */
             }
 
             .brand {
                 width: 100%;
-                justify-content: space-between;
+                justify-content: flex-start;
+            }
+
+            .mobile-filter-btn {
+                display: flex !important;
             }
         }
 
@@ -785,6 +885,14 @@
 
         .mobile-filter-btn:hover {
             background: var(--bg-body);
+        }
+
+        .mobile-filter-btn i.fa-chevron-down {
+            transition: transform 0.3s;
+        }
+
+        .mobile-filter-btn.active i.fa-chevron-down {
+            transform: rotate(180deg);
         }
 
         @keyframes slideDown {
@@ -1057,7 +1165,7 @@
         /* Toast Notifications */
         #toast-container {
             position: fixed;
-            top: 20px;
+            top: 90px;
             right: 20px;
             z-index: 3000;
             display: flex;
@@ -1197,6 +1305,9 @@
     <header>
         <div class="container header-content">
             <div class="brand">
+                <button class="hamburger-btn" onclick="toggleNav()">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="brand-logo">E</div>
                 <div class="brand-text">Catálogo Formativo</div>
             </div>
@@ -1210,8 +1321,8 @@
 
             <div style="display: flex; align-items: center; gap: 1rem;">
 
-                <!-- Credit Progress Bar -->
-                <div class="credit-bar-container" title="Créditos disponibles">
+                <!-- Credit Progress Bar (Desktop Only) -->
+                <div class="credit-bar-container desktop-only" title="Créditos disponibles">
                     <div class="credit-text">
                         <span id="creditText">600</span> Créditos
                     </div>
@@ -1220,8 +1331,8 @@
                     </div>
                 </div>
 
-                <!-- Admin Controls moved here for better space usage if needed, or kept hidden/toggleable -->
-                <div class="admin-toggle-wrapper" title="Modo Administrador">
+                <!-- Admin Controls (Desktop Only) -->
+                <div class="admin-toggle-wrapper desktop-only" title="Modo Administrador">
                     <i class="fas fa-user-shield" style="color: var(--text-light);"></i>
                     <label class="switch" style="transform: scale(0.8);">
                         <input type="checkbox" id="adminToggle">
@@ -1229,7 +1340,7 @@
                     </label>
                 </div>
 
-                <a href="dashboard.html" class="btn btn-secondary"
+                <a href="dashboard.html" class="btn btn-secondary desktop-only"
                     style="padding: 8px 16px; font-size: 0.85rem; border-radius: 99px; text-decoration: none;">
                     <i class="fas fa-graduation-cap"></i> Mi Formación
                 </a>
@@ -1238,12 +1349,6 @@
                     <i class="fas fa-shopping-cart"></i>
                     <div class="cart-badge" id="cartBadge">0</div>
                 </div>
-                <!-- Credit Counter moved/styled differently if needed, keeping simple for now -->
-                <div class="credit-counter-wrapper" style="display: none;">
-                    <!-- Hidden temporarily as per design focus, or keep? Design doesn't show it clearly, let's keep it but maybe less obtrusive if requested. For now, I'll hide it to match the clean design looking at the image, user didn't explicitly ask to remove but "adjust to design" -->
-                    <span class="credit-label">Créditos:</span>
-                    <span class="credit-value" id="globalCredits">600</span>
-                </div>
             </div>
         </div>
     </header>
@@ -1251,9 +1356,10 @@
     <main class="container main-layout"
         style="display: grid; grid-template-columns: 260px 1fr; gap: 3rem; padding-top: 2rem;">
 
-        <!-- Mobile Filter Toggle -->
-        <button class="mobile-filter-btn" onclick="toggleSidebar()">
-            <i class="fas fa-filter"></i> Filtrar Cursos
+        <!-- Mobile Filter Toggle (Main Content) -->
+        <button class="mobile-filter-btn" id="filterBtn" onclick="toggleFilters()">
+            <i class="fas fa-filter"></i> Filtrar Cursos <i class="fas fa-chevron-down"
+                style="margin-left: auto; font-size: 0.8rem;"></i>
         </button>
 
         <!-- Sidebar -->
@@ -1271,10 +1377,26 @@
             <div class="sidebar-section">
                 <h3 class="sidebar-title">Modalidad</h3>
                 <ul class="sidebar-list">
-                    <li class="sidebar-item" data-filter="grabados"
-                        onclick="setSidebarFilter(this, 'modality', 'Online')">Grabados</li>
-                    <li class="sidebar-item" data-filter="soon" onclick="setSidebarFilter(this, 'date', 'soon')">A
-                        puntos de empezar</li>
+                    <li class="sidebar-item active" data-filter="all"
+                        onclick="setSidebarFilter(this, 'modality', 'all')">Todas</li>
+                    <li class="sidebar-item" data-filter="online"
+                        onclick="setSidebarFilter(this, 'modality', 'Online')">Online</li>
+                    <li class="sidebar-item" data-filter="semipresencial"
+                        onclick="setSidebarFilter(this, 'modality', 'Semipresencial')">Semipresencial</li>
+                    <li class="sidebar-item" data-filter="presencial"
+                        onclick="setSidebarFilter(this, 'modality', 'Presencial')">Presencial</li>
+                    <li class="sidebar-item" data-filter="virtual"
+                        onclick="setSidebarFilter(this, 'modality', 'Virtual Live')">Virtual Live</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Fecha</h3>
+                <ul class="sidebar-list">
+                    <li class="sidebar-item active" data-filter="all" onclick="setSidebarFilter(this, 'date', 'all')">
+                        Cualquier fecha</li>
+                    <li class="sidebar-item" data-filter="soon" onclick="setSidebarFilter(this, 'date', 'soon')">A punto
+                        de empezar</li>
                 </ul>
             </div>
 
@@ -1374,6 +1496,47 @@
                     Confirmar Selección <i class="fas fa-check-circle"></i>
                 </button>
             </div>
+        </div>
+
+        <!-- Nav Drawer -->
+        <div class="nav-overlay" id="navOverlay" onclick="toggleNav()"></div>
+        <div class="nav-drawer" id="navDrawer">
+            <div class="nav-drawer-header">
+                <div class="brand" style="justify-content: flex-start;">
+                    <div class="brand-logo" style="border: 1px solid var(--border);">E</div>
+                    <div class="brand-text" style="color: var(--primary);">Menú</div>
+                </div>
+                <button onclick="toggleNav()"
+                    style="background:none;border:none;font-size:1.5rem;color:var(--text-light);cursor:pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Credits -->
+            <div
+                style="padding: 1rem; background: var(--primary); border-radius: 12px; color: white; margin-bottom: 2rem;">
+                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 4px;">Créditos Disponibles</div>
+                <div
+                    style="font-size: 1.5rem; font-weight: 700; color: var(--accent); display:flex; align-items:center; gap:8px;">
+                    <span id="creditTextMobile">600</span>
+                    <i class="fas fa-coins" style="font-size: 1rem;"></i>
+                </div>
+            </div>
+
+            <a href="dashboard.html" class="nav-item">
+                <i class="fas fa-graduation-cap" style="width: 24px;"></i> Mi Formación
+            </a>
+
+            <div class="nav-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <i class="fas fa-user-shield" style="width: 24px;"></i> Modo Admin
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="adminToggleMobile">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
         </div>
 
     </main>
@@ -1506,8 +1669,25 @@
         const modalOverlay = document.getElementById('courseModal');
         const courseForm = document.getElementById('courseForm');
         const adminToggle = document.getElementById('adminToggle');
+        // Mobile Admin Toggle
+        const adminToggleMobile = document.getElementById('adminToggleMobile');
 
         // --- 3. Core Functions ---
+
+        // Sync Admin Toggles
+        function syncAdminToggles(isActive) {
+            isAdminMode = isActive;
+            if (adminToggle) adminToggle.checked = isActive;
+            if (adminToggleMobile) adminToggleMobile.checked = isActive;
+            renderCourses(applyFilters());
+        }
+
+        if (adminToggle) {
+            adminToggle.addEventListener('change', (e) => syncAdminToggles(e.target.checked));
+        }
+        if (adminToggleMobile) {
+            adminToggleMobile.addEventListener('change', (e) => syncAdminToggles(e.target.checked));
+        }
 
         function saveCourses() {
             localStorage.setItem('enae_courses_v5', JSON.stringify(courses));
@@ -1605,9 +1785,25 @@
             updateGlobalCredits();
         }
 
-        function toggleSidebar() {
+        function toggleNav() {
+            const drawer = document.getElementById('navDrawer');
+            const overlay = document.getElementById('navOverlay');
+            drawer.classList.toggle('active');
+            overlay.classList.toggle('active');
+
+            // Prevent body scroll
+            if (drawer.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function toggleFilters() {
             const sidebar = document.getElementById('mainSidebar');
-            if (sidebar) sidebar.classList.toggle('active');
+            const btn = document.getElementById('filterBtn');
+            sidebar.classList.toggle('active');
+            btn.classList.toggle('active');
         }
 
         function updateGlobalCredits() {
@@ -1621,6 +1817,10 @@
             // Header Progress Bar
             const creditFill = document.getElementById('creditFill');
             const creditText = document.getElementById('creditText');
+            // Mobile Text
+            const creditTextMobile = document.getElementById('creditTextMobile');
+
+            if (creditTextMobile) creditTextMobile.innerText = remaining;
 
             if (creditFill && creditText) {
                 const percentage = Math.max(0, (remaining / TOTAL_CREDITS) * 100);
@@ -1677,7 +1877,6 @@
             selectedCourses.forEach(id => {
                 const c = courses.find(x => x.id === id);
                 if (!c) return;
-
                 const item = document.createElement('div');
                 item.className = 'cart-item';
                 item.innerHTML = `
